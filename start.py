@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from utils import getnews
-from datetime import date as dt,timedelta
+from datetime import date as dt, timedelta
 
 app = Flask(__name__)
 
@@ -8,8 +8,8 @@ posts=[{
     
 }]
 
-@app.route("/")
-@app.route("/home")
+@app.route("/",methods=['POST','GET'])
+@app.route("/home",methods=['POST','GET'])
 def home():
     from newsapi import NewsApiClient
     newsapi = NewsApiClient(api_key='e442517dd5d3486b8e2fa0b9674edfd4')
@@ -26,7 +26,13 @@ def home():
     print(sourceids)
     # for i in sourceid:
     #     print(i)
-    articlelists = getnews(sourceids,today,today)
+    if request.method == "POST":
+        print("hmmm")
+        if request.form['search']:
+            searchterm = request.form['search']
+            articlelists = getnews(sourceids,today,today,searchterm = searchterm)
+    else:
+        articlelists = getnews(sourceids,today,today)
         # for j in articlelist:
         #     articlelists.append(j)
     # print(len(articlelists))
